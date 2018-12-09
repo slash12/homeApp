@@ -143,6 +143,9 @@ return [
     |
     */
 
-    'attributes' => [],
+    'attributes' => [
+        'txttempmax' => 'Max Temperature',
+        'txttempmin' => 'Min Temperature'
+    ],
 
 ];

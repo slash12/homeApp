@@ -11,8 +11,6 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', 'basicController@viewHome');
+Route::post('/temp/save', 'basicController@save_temp')->name('saveTemp');
 
-Route::get('/home', 'basicController@viewHome');
