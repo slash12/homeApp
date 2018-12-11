@@ -1,35 +1,110 @@
 @extends('layout.layout')
 @section('header')
+<link rel="icon" href="{{asset('icons/temp-icon.ico')}}">
 <title>Home | Temperature</title>
-<style>
-    .row, .col, .col-3, .col-9
-    {
-        border:1px solid black;
-    }
-</style>
+<script src="{{ asset('js/Chart.min.js') }}"></script>
 @endsection
 @section('content')
 <div class="row">
-    <div class="col">
-        Temperature Graph
-        <div id="temps-div"></div>
-        @linechart('Temps', 'temps_div')
+    <div class="col canvas-chart">
+        <canvas id="canvas" height="75"></canvas>   
+        <script>
+            var all_max_temp_init  = "{{$all_max_temp}}";
+            var all_max_temp = JSON.parse(all_max_temp_init.replace(/&quot;/g,'"'));
+            all_max_temp_value = [];
+            for (var i = 0; i < all_max_temp.length; i++) 
+            {
+                all_max_temp_value.push(all_max_temp[i]['temp_max']);
+            }
+
+            var all_min_temp_init  = "{{$all_min_temp}}";
+            var all_min_temp = JSON.parse(all_min_temp_init.replace(/&quot;/g,'"'));
+            all_min_temp_value = [];
+            for (var i = 0; i < all_min_temp.length; i++) 
+            {
+                all_min_temp_value.push(all_min_temp[i]['temp_min']);
+            }
+            
+            var all_date_init  = "{{$all_date}}";
+            var all_date = JSON.parse(all_date_init.replace(/&quot;/g,'"'));
+            all_date_value = [];
+            for (var i = 0; i < all_date.length; i++) 
+            {
+                all_date_value.push(all_date[i]['formatted_date']);
+            }
+
+
+            var ctx = canvas.getContext('2d');
+            var config = {
+            type: 'line',
+            data: {
+                    labels: all_date_value,
+                    datasets: [
+                        {
+                            label: 'Max',
+                            data: all_max_temp_value,
+                            backgroundColor: 'rgba(240,128,127)',
+                            borderColor: 'rgba(240,128,128)',
+                            fill:false,
+                        },
+                        {
+                            label: 'Min',
+                            data: all_min_temp_value,
+                            backgroundColor: 'rgba(0, 118, 204, 0.3)',
+                            borderColor: 'rgba(0, 119, 204, 0.3)',
+                            fill:false,
+                        },
+                ]
+            },
+            options:
+            {
+                responsive: true,
+				title: {
+					display: true,
+					text: 'Temperature Readings'
+                },
+                scales:
+                {
+                    xAxes:[{
+                        display:true,
+                        scaleLabel:{
+                            display:true,
+                            labelString:'Date'
+                        }
+                    }],
+                    yAxes:[{
+                        display:true,
+                        scaleLabel:{
+                            display:true,
+                            labelString:'Temperature'
+                        }
+                    }]
+                }
+            }
+            };
+        
+            var chart = new Chart(ctx, config);
+        </script>   
     </div>
 </div>
-<div class="row">
+<div class="row temp-tbl-btn">
     <div class="col-9">
-        <table class="table table-hover">
+        <table class="table table-hover temp-table">
             <thead>
                 <th>Timestamp</th>
                 <th>Max Temperature</th>
                 <th>Min Temperature</th>
+                <th>Action</th>
             </thead>
             <tbody>
-                @foreach ($all_temp as $temp)
+                @foreach ($all_temp_five as $temp)
                     <tr class="table-light">
                         <td>{{ $temp->created_at }}</td>
                         <td>{{ $temp->temp_max }}</td>
                         <td>{{ $temp->temp_min }}</td>
+                        <td>                            
+                            <a class="temp-btn-delete" href="/temp/delete/{{ $temp->id }}">Delete</a>
+                        </td>
                     </tr>
                 @endforeach
             </tbody>
@@ -50,8 +125,8 @@
           </button>
         </div>
         <div class="modal-body">
-          <form method="post" action="{{ route('saveTemp') }}">
-              @csrf
+          <form id="frmtemp" method="post" action="{{ route('saveTemp') }}">
+              @csrf              
                 <div class="form-group">
                     <label for="txttempmax">Max Temperature</label>
                     <input type="text" maxlength="5" value="{{ old('txttempmax') }}" class="form-control @if ($errors->has('txttempmax')) is-invalid @endif" name="txttempmax" id="txttempmax" placeholder="Maximum Temperature">
@@ -74,6 +149,40 @@
   </div>
 
   @section('script')
+    <script>
+        $('.temp-btn-delete').on("click", function(e)
+        {
+            e.preventDefault();
+            var href = $(this).attr('href');            
+            $.confirm({
+                title: 'Confirmation Message',
+                content: 'Are you Sure?',
+                type: 'red',
+                typeAnimated: true,
+                buttons: 
+                {
+                    Yes: function () 
+                    {
+                        window.location=href
+                    },
+                    No: function () 
+                    {
+                        backgroundDismiss: true
+                    }
+                }
+            });
+        });
+    </script>
+
+    @if (session('status') == 'deleted-temp')
+        <script>
+            iziToast.success({
+                title: 'Temperature readings',
+                message: 'deleted',
+            });
+        </script>                                         
+    @endif
+
     @if (!$errors->isEmpty())
         <script>
             $(document).ready(function()
@@ -85,10 +194,11 @@
     @if(session('temp-alert')=="Success")
         <script>
             iziToast.success({
-                title: 'Temperature',
+                title: 'Temperature readings',
                 message: 'was added',
             });
         </script>
     @endif
   @endsection
+
 @endsection

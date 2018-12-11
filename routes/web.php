@@ -13,4 +13,5 @@
 
 Route::get('/', 'basicController@viewHome');
 Route::post('/temp/save', 'basicController@save_temp')->name('saveTemp');
+Route::get('/temp/delete/{id}', 'basicController@delete_temp');
 

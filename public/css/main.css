@@ -1,0 +1,10 @@
+/* Temperature page */
+
+.temp-table th,
+.temp-table td {
+    text-align: center;
+}
+
+.temp-tbl-btn {
+    padding-top: 4.5%;
+}

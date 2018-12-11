@@ -5,34 +5,37 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Temperature;
 use DB;
-use Khill\Lavacharts\Lavacharts;
+
 
 class basicController extends Controller
 {
     public function viewHome()
     {
         $all_temp_five = DB::table('temperature')
-        ->select('created_at', 'temp_max', 'temp_min')
+        ->select('created_at', 'temp_max', 'temp_min', 'id')
         ->orderBy('created_at', 'desc')
         ->take(5)
         ->get();
 
-        
+        $all_max_temp = DB::table('temperature')
+        ->select(DB::raw('temp_max'))          
+        ->orderBy('created_at', 'desc')      
+        ->get()
+        ->toJson();
 
-        var_dump($all_temp_array);die;
+        $all_min_temp = DB::table('temperature')
+        ->select(DB::raw('temp_min'))          
+        ->orderBy('created_at', 'desc')      
+        ->get()
+        ->toJson();
 
-        $lava_all_temp = new Lavacharts;
-        $lava_popu = $lava_all_temp->DataTable();
-        $lava_popu->addDateColumn('Date')
-        ->addNumberColumn('Max Temp')
-        ->addNumberColumn('Min Temp')
-        ->addRows($all_temp_array);
+        $all_date = DB::table('temperature')
+        ->select(DB::raw('DATE_FORMAT(temperature.created_at, "%d-%b-%Y") as formatted_date'))          
+        ->orderBy('created_at', 'desc')      
+        ->get()
+        ->toJson();
 
-        $lava_all_temp->LineChart('Temps', $lava_popu, [
-            'title' => 'Home Temperature'
-        ]);
-
-        return view('temperature', ['all_temp' => $all_temp]);
+        return view('temperature', ['all_temp_five' => $all_temp_five, 'all_max_temp' => $all_max_temp, 'all_date' => $all_date, 'all_min_temp' => $all_min_temp]);
     }
 
     public function save_temp(Request $request)
@@ -51,5 +54,13 @@ class basicController extends Controller
         $temperature->save();
 
         return redirect('/')->with('temp-alert', 'Success');
+    }
+
+    public function delete_temp($id)
+    {
+        $temperature = Temperature::find($id);
+        $temperature->delete();
+        
+        return redirect('/')->with('status', 'deleted-temp');
     }
 }
