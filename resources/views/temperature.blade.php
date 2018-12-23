@@ -1,6 +1,7 @@
 @extends('layout.layout')
 @section('header')
 <link rel="icon" href="{{asset('icons/temp-icon.ico')}}">
+<link rel="stylesheet" href="{{ asset('css/balloon.min.css') }}">
 <title>Home | Temperature</title>
 <script src="{{ asset('js/Chart.min.js') }}"></script>
 @endsection
@@ -61,7 +62,7 @@
                 responsive: true,
 				title: {
 					display: true,
-					text: 'Temperature Readings'
+					text: 'Weekly Temperature Readings'
                 },
                 scales:
                 {
@@ -111,7 +112,13 @@
         </table>
     </div>
     <div class="col-3">
-        <button type="button" data-toggle="modal" data-target="#tempModal" name="btnaddtemp" class="btn btn-primary">Add Temperature </button>
+        @if( $temp_rec_fl == true)
+            <button type="button" class="btn btn-primary" data-balloon="Today's reading already recorded!" data-balloon-pos="up" disabled>Add Temperature</button>
+        @else
+            <button type="button" data-toggle="modal" data-target="#tempModal" name="btnaddtemp" class="btn btn-primary">Add Temperature</button>
+        @endif
+
+        <a href="/temp/past" class="btn btn-secondary btn-temp-past">View Past Readings</a>
     </div>
 </div>
 
