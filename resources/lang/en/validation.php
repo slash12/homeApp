@@ -145,7 +145,9 @@ return [
 
     'attributes' => [
         'txttempmax' => 'Max Temperature',
-        'txttempmin' => 'Min Temperature'
+        'txttempmin' => 'Min Temperature',
+        'dto' => 'To',
+        'dfrom' => 'From'
     ],
 
 ];

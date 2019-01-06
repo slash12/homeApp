@@ -11,8 +11,15 @@
 |
 */
 
+//Home
 Route::get('/', 'basicController@viewHome');
-Route::post('/temp/save', 'basicController@save_temp')->name('saveTemp');
-Route::get('/temp/delete/{id}', 'basicController@delete_temp');
-Route::get('/temp/past', 'basicController@view_temp_past_init');
+
+//Temperature Route
+Route::post('/temp/save', 'TemperatureController@save_temp')->name('saveTemp');
+Route::get('/temp/delete/{id}', 'TemperatureController@delete_temp');
+Route::get('/temp/past', 'TemperatureController@view_temp_past_init');
+Route::post('/temp/past', 'TemperatureController@view_temp_past')->name('searchTemp');
+Route::get('/temp', 'TemperatureController@viewHome');
+
+//Expenses Route
 
