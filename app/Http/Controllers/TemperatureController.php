@@ -55,13 +55,18 @@ class TemperatureController extends Controller
         ->orderBy('created_at', 'desc') 
         ->take(1)
         ->get();
+                
 
-        $latest_temp_date = (int)$latest_temp[0]->latest_date;
+        if (count($latest_temp) > 0) {            
+            $latest_temp_date = (int)$latest_temp[0]->latest_date;
+        } else {
+            $latest_temp_date = null;
+        }
 
         $info_date = getdate();
         $date_today =  $info_date['mday'];
 
-        if($latest_temp_date === $date_today)
+        if($latest_temp_date != null && $latest_temp_date === $date_today)
         {
             $temp_rec_fl = true;
         }
