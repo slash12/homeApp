@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Maatwebsite\Excel\Facades\Excel;
+use App\temperature;
 
 class importReading extends Command
 {
@@ -38,6 +39,7 @@ class importReading extends Command
      */
     public function handle()
     {
-        dd('test');
+        $import = Excel::import('sampleData.csv');
+        dd($import);
     }
 }
