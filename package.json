@@ -21,7 +21,7 @@
     },
     "dependencies": {
         "balloon-css": "^0.5.0",
-        "chart.js": "^2.7.3",
+        "chart.js": "^2.9.4",
         "izitoast": "^1.4.0",
         "jquery-confirm": "^3.3.2"
     }
